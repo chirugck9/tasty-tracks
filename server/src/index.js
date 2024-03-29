@@ -3,6 +3,9 @@ const { PORT } = require("./constants");
 
 const app = express();
 
+//initialize middlewares
+app.use(express.json());
+
 //import routes
 const authRoutes = require("./routes/auth");
 
