@@ -1,4 +1,6 @@
 const db = require("../db");
+const { hash } = require("bcryptjs");
+const queries = require("./queries");
 
 exports.getUsers = async (req, res) => {
 	try {
@@ -6,7 +8,7 @@ exports.getUsers = async (req, res) => {
 		const limit = req.params.limit;
 		const offset = (page_id - 1) * limit;
 		const getUsers = {
-			text: "SELECT * FROM users ORDER BY created_at DESC OFFSET ($1) LIMIT ($2)",
+			text: "SELECT * FROM users ORDER BY registration_date DESC OFFSET ($1) LIMIT ($2)",
 			values: [offset, limit],
 		};
 		const result = await db.query(getUsers);
@@ -32,9 +34,95 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
+	const {
+		username,
+		email,
+		password,
+		first_name,
+		last_name,
+		phone_number,
+		role_type,
+	} = req.body;
 	try {
-		console.log("validation Passed");
+		//hash the users password with bcrypts
+		const hashedPassword = await hash(password, 10);
+
+		//insert the user into the database
+		let result = await db.query(queries.registerUser, [
+			username,
+			email,
+			hashedPassword,
+			first_name,
+			last_name,
+			phone_number,
+			role_type,
+		]);
+		let newUser = result.rows[0];
+		switch (role_type) {
+			case "Customer":
+				const query_customer = {
+					text: "INSERT INTO customers (email,password,first_name,last_name,phone_number,user_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
+					values: [
+						email,
+						password,
+						first_name,
+						last_name,
+						phone_number,
+						newUser.id,
+					],
+				};
+				const RoleBasedRegisterCustomer = await db.query(query_customer);
+				console.log(RoleBasedRegisterCustomer.rows[0]);
+				break;
+			case "Restaurant Owner":
+				const query_restaurant_owner = {
+					text: "INSERT INTO restaurant_owners (email,password,first_name,last_name,phone_number,user_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
+					values: [
+						email,
+						password,
+						first_name,
+						last_name,
+						phone_number,
+						newUser.id,
+					],
+				};
+				const RoleBasedRegisterRestaurantOwner = await db.query(
+					query_restaurant_owner
+				);
+				console.log(RoleBasedRegisterRestaurantOwner.rows[0]);
+				break;
+			case "Delivery Agent":
+				const query_delivery_agent = {
+					text: "INSERT INTO delivery_persons (username,email,password,first_name,last_name,phone_number,user_id) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",
+					values: [
+						username,
+						email,
+						password,
+						first_name,
+						last_name,
+						phone_number,
+						newUser.id,
+					],
+				};
+				const RoleBasedRegisterDeliveryAgent = await db.query(
+					query_delivery_agent
+				);
+				console.log(RoleBasedRegisterDeliveryAgent.rows[0]);
+				break;
+
+			default:
+				console.log("Invalid role type");
+				break;
+		}
+		return res.status(201).json({
+			success: true,
+			message: "Registration was succesfull",
+			data: newUser,
+		});
 	} catch (error) {
-		console.log(error.message);
+		console.error(error.message);
+		return res.status(500).json({
+			error: "An error occured while registration",
+		});
 	}
 };
