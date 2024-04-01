@@ -93,9 +93,8 @@ exports.register = async (req, res) => {
 				break;
 			case "Delivery Agent":
 				const query_delivery_agent = {
-					text: "INSERT INTO delivery_persons (username,email,password,first_name,last_name,phone_number,user_id) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",
+					text: "INSERT INTO delivery_persons (email,password,first_name,last_name,phone_number,user_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
 					values: [
-						username,
 						email,
 						password,
 						first_name,
@@ -123,6 +122,38 @@ exports.register = async (req, res) => {
 		console.error(error.message);
 		return res.status(500).json({
 			error: "An error occured while registration",
+		});
+	}
+};
+
+exports.login = async (req, res) => {
+	let user = req.user;
+
+	let payload = {
+		id: user.id,
+		first_name: user.first_name,
+		last_name: user.last_name,
+		email: user.email,
+		contact_info: user.contact_info,
+		address: user.address,
+		role: user.role_type,
+		created_at: user.created_at,
+	};
+	try {
+		const token = await sign(payload, SECRET);
+		return res
+			.status(200)
+			.cookie("token", token, { httpOnly: true })
+			.json({
+				...user,
+				token: token,
+				success: true,
+				message: "Logged in successfully",
+			});
+	} catch (error) {
+		console.log(error.message);
+		return res.status(500).json({
+			error: error.message,
 		});
 	}
 };
