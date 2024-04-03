@@ -1,6 +1,8 @@
 const db = require("../db");
 const { hash } = require("bcryptjs");
+const { sign } = require("jsonwebtoken");
 const queries = require("./queries");
+const { SECRET } = require("../constants");
 
 exports.getUsers = async (req, res) => {
 	try {
@@ -128,14 +130,12 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
 	let user = req.user;
-
 	let payload = {
 		id: user.id,
+		email: user.email,
 		first_name: user.first_name,
 		last_name: user.last_name,
-		email: user.email,
-		contact_info: user.contact_info,
-		address: user.address,
+		phone_number: user.phone_number,
 		role: user.role_type,
 		created_at: user.created_at,
 	};
@@ -148,22 +148,12 @@ exports.login = async (req, res) => {
 				...user,
 				token: token,
 				success: true,
-				message: "Logged in successfully",
+				message: "Logged in succesfully",
 			});
 	} catch (error) {
 		console.log(error.message);
 		return res.status(500).json({
 			error: error.message,
 		});
-	}
-};
-
-exports.protected = async (req, res) => {
-	try {
-		return res.status(200).json({
-			info: "protected info",
-		});
-	} catch (error) {
-		console.log(error.message);
 	}
 };
