@@ -10,5 +10,6 @@ const router = Router();
 router.get("/get-users/:page_id/:limit", getUsers);
 router.post("/register", registerValidation, validationMiddleware, register);
 router.post("/login", loginValidation, validationMiddleware, login);
+router.get("/protected", userAuth, protected);
 
 module.exports = router;
