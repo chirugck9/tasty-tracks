@@ -1,11 +1,18 @@
 const express = require("express");
-const { PORT } = require("./constants");
+const { PORT, CLIENT_URL } = require("./constants");
+const cookieParser = require("cookie-parser");
+const passport = require("passport");
+const cors = require("cors");
 
 const app = express();
+//import passport middleware
+require("./middlewares/passport-middleware");
 
 //initialize middlewares
 app.use(express.json());
-
+app.use(cookieParser());
+app.use(passport.initialize());
+app.use(cors({ origin: CLIENT_URL, credentials: true }));
 //import routes
 const authRoutes = require("./routes/auth");
 
