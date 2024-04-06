@@ -22,4 +22,61 @@ const createRestaurantOwner = async (req, res) => {
 	}
 };
 
-module.exports = { createRestaurantOwner };
+//get all restaurant-owners
+const getAllRestaurantOwners = async (req, res) => {
+	try {
+		const page_id = req.params.page_id;
+		const limit = req.params.limit;
+		const offset = (page_id - 1) * limit;
+		const query = {
+			text: "SELECT * FROM restaurant_owners ORDER BY registration_date OFFSET($1) LIMIT ($2)",
+			values: [offset, limit],
+		};
+		const result = await db.query(query);
+		if (!(result.rowCount === 0)) {
+			return res.status(200).json({
+				success: true,
+				message: "All restaurant owners list",
+				data: result.rows,
+			});
+		} else {
+			return res.status(200).json({
+				success: true,
+				message: "data limit reached",
+				data: [],
+			});
+		}
+	} catch (error) {
+		console.error(error);
+		throw new Error("An error occured while fetching restaurant owners");
+	}
+};
+
+//get restaurant owner by id
+const getRestaurantOwnerById = async (req, res) => {
+	try {
+		const query = {
+			text: "SELECT * FROM restaurant_owners WHERE owner_id = $1",
+			values: [req.params.owner_id],
+		};
+		const result = await db.query(query);
+		if (result.rows[0]) {
+			return res.status(200).json({
+				success: true,
+				message: "Restaurant owner retrieved succesfully",
+				data: result.rows[0],
+			});
+		} else {
+			throw new Error("Restaurant owner not found");
+		}
+	} catch (error) {
+		console.error(error);
+		throw new Error("An error occured while fetching the restaurant owner");
+	}
+};
+
+module.exports = {
+	createRestaurantOwner,
+	getAllRestaurantOwners,
+	getRestaurantOwnerById,
+};
