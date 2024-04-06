@@ -15,10 +15,12 @@ app.use(passport.initialize());
 app.use(cors({ origin: CLIENT_URL, credentials: true }));
 //import routes
 const authRoutes = require("./routes/auth");
+const customers = require("./routes/customers");
+const { userAuth } = require("./middlewares/auth-middleware");
 
 //initialize routes
 app.use("/api", authRoutes);
-
+app.use("/api", userAuth, customers);
 //app start
 const appStart = () => {
 	try {
