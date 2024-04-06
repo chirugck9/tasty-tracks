@@ -16,11 +16,13 @@ app.use(cors({ origin: CLIENT_URL, credentials: true }));
 //import routes
 const authRoutes = require("./routes/auth");
 const customers = require("./routes/customers");
+const restaurantOwners = require("./routes/restaurant-owners");
 const { userAuth } = require("./middlewares/auth-middleware");
 
 //initialize routes
 app.use("/api", authRoutes);
 app.use("/api", userAuth, customers);
+app.use("/api", userAuth, restaurantOwners);
 //app start
 const appStart = () => {
 	try {
