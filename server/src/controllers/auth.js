@@ -66,7 +66,7 @@ exports.register = async (req, res) => {
 					text: "INSERT INTO customers (email,password,first_name,last_name,phone_number,user_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
 					values: [
 						email,
-						password,
+						hashedPassword,
 						first_name,
 						last_name,
 						phone_number,
@@ -81,7 +81,7 @@ exports.register = async (req, res) => {
 					text: "INSERT INTO restaurant_owners (email,password,first_name,last_name,phone_number,user_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
 					values: [
 						email,
-						password,
+						hashedPassword,
 						first_name,
 						last_name,
 						phone_number,
@@ -98,7 +98,7 @@ exports.register = async (req, res) => {
 					text: "INSERT INTO delivery_persons (email,password,first_name,last_name,phone_number,user_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
 					values: [
 						email,
-						password,
+						hashedPassword,
 						first_name,
 						last_name,
 						phone_number,

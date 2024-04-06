@@ -51,4 +51,102 @@ const getAllCustomers = async (req, res) => {
 	}
 };
 
-module.exports = { createCustomer, getAllCustomers };
+//function to get customers by id
+const getCustomerById = async (req, res) => {
+	try {
+		const query = {
+			text: "SELECT * FROM customers WHERE customer_id = $1",
+			values: [req.params.customer_id],
+		};
+		const result = await db.query(query);
+		if (result.rows[0]) {
+			return res.status(200).json({
+				success: true,
+				message: "Customer retrived succesfully",
+				data: result.rows[0],
+			});
+		} else {
+			throw new Error("Customer not found");
+		}
+	} catch (error) {
+		console.error(error);
+		throw new Error("An error occured while fetching the customer");
+	}
+};
+
+//function to update customer by customer_id
+const updateCustomerById = async (req, res) => {
+	const { first_name, last_name, email, password, phone_number, address } =
+		req.body;
+	const customerId = req.params.customer_id;
+	try {
+		const query = {
+			text: "UPDATE customers SET first_name = $1 ,last_name = $2 , email = $3 ,password = $4 , phone_number = $5,address = $6 WHERE customer_id = $7 RETURNING *",
+			values: [
+				first_name,
+				last_name,
+				email,
+				password,
+				phone_number,
+				address,
+				customerId,
+			],
+		};
+		const result = await db.query(query);
+		const queryUser = {
+			text: "UPDATE users SET first_name = $1 ,last_name = $2 , email = $3 ,password = $4 , phone_number = $5,address = $6 WHERE id= $7 RETURNING *",
+			values: [
+				first_name,
+				last_name,
+				email,
+				password,
+				phone_number,
+				address,
+				result.rows[0].user_id,
+			],
+		};
+		const resultUser = await db.query(queryUser);
+		if (result.rowCount === 1) {
+			return res.status(200).json({
+				success: true,
+				message: "Customer updated succesfully",
+				data: result.rows[0],
+			});
+		} else {
+			throw new Error("Customer not found");
+		}
+	} catch (error) {
+		console.error(error);
+		throw new Error("An error has occured while updating the customer");
+	}
+};
+//delete customer by customer id
+const deleteCustomerById = async (req, res) => {
+	try {
+		const query = {
+			text: "DELETE FROM customers WHERE customer_id = $1 RETURNING *",
+			values: [req.params.customer_id],
+		};
+		const result = await db.query(query);
+		if (result.rowCount === 1) {
+			return res.status(200).json({
+				success: true,
+				message: "Customer deleted succesfully",
+				data: result.rows[0],
+			});
+		} else {
+			throw new Error("Customer not found");
+		}
+	} catch (error) {
+		console.error(error);
+		throw new Error("An error occured while deleting the customer");
+	}
+};
+
+module.exports = {
+	createCustomer,
+	getAllCustomers,
+	getCustomerById,
+	updateCustomerById,
+	deleteCustomerById,
+};
