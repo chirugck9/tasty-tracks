@@ -75,8 +75,47 @@ const getRestaurantOwnerById = async (req, res) => {
 	}
 };
 
+//update restaurant owner by id
+const updateRestaurantOwnerById = async (req, res) => {
+	const { first_name, last_name, email, password, phone_number, address } =
+		req.body;
+	const ownerId = req.params.owner_id;
+	try {
+		const query = {
+			text: "UPDATE restaurant_owners SET first_name = $1,last_name = $2,email = $3,password = $4, phone_number = $5 , address = $6 WHERE owner_id = $7 RETURNING *",
+			values: [first_name, last_name, email, password, phone_number, address],
+		};
+		const result = await db.query(query);
+		const queryUser = {
+			text: "UPDATE users SET first_name = $1,last_name = $2,email = $3,password = $4, phone_number = $5 , address = $6 updated_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING *",
+			values: [
+				first_name,
+				last_name,
+				email,
+				password,
+				phone_number,
+				address,
+				result.rows[0].user_id,
+			],
+		};
+		const resultUser = await db.query(queryUser);
+		if (result.rowCount === 1) {
+			return res.status(200).json({
+				success: true,
+				message: "Restaurant owner updated succesfully",
+				data: result.rows[0],
+			});
+		} else {
+			throw new Error("Restaurant owner not found");
+		}
+	} catch (error) {
+		console.error(error);
+		throw new Error("An error occured while updating the restaurant owner");
+	}
+};
 module.exports = {
 	createRestaurantOwner,
 	getAllRestaurantOwners,
 	getRestaurantOwnerById,
+	updateRestaurantOwnerById,
 };
