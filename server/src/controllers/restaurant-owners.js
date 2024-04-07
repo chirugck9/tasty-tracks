@@ -83,7 +83,15 @@ const updateRestaurantOwnerById = async (req, res) => {
 	try {
 		const query = {
 			text: "UPDATE restaurant_owners SET first_name = $1,last_name = $2,email = $3,password = $4, phone_number = $5 , address = $6 WHERE owner_id = $7 RETURNING *",
-			values: [first_name, last_name, email, password, phone_number, address],
+			values: [
+				first_name,
+				last_name,
+				email,
+				password,
+				phone_number,
+				address,
+				ownerId,
+			],
 		};
 		const result = await db.query(query);
 		const queryUser = {
@@ -113,9 +121,32 @@ const updateRestaurantOwnerById = async (req, res) => {
 		throw new Error("An error occured while updating the restaurant owner");
 	}
 };
+
+//delete restaurant owner by id
+const deleteRestaurantOwnerById = async (req, res) => {
+	try {
+		const query = {
+			text: "DELETE FROM restaurant_owners WHERE owner_id = $1 RETURNING *",
+			values: [req.params.owner_id],
+		};
+		const result = await db.query(query);
+		if (result.rowCount === 1) {
+			return res.status(200).json({
+				success: true,
+				message: "Restaurant owner deleted succesfully",
+				data: result.rows[0],
+			});
+		}
+	} catch (error) {
+		console.error(error);
+		throw new Error("An error occured while deleting restaurant owner");
+	}
+};
+
 module.exports = {
 	createRestaurantOwner,
 	getAllRestaurantOwners,
 	getRestaurantOwnerById,
 	updateRestaurantOwnerById,
+	deleteRestaurantOwnerById,
 };
