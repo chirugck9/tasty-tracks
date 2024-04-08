@@ -17,12 +17,14 @@ app.use(cors({ origin: CLIENT_URL, credentials: true }));
 const authRoutes = require("./routes/auth");
 const customers = require("./routes/customers");
 const restaurantOwners = require("./routes/restaurant-owners");
+const riders = require("./routes/riders");
 const { userAuth } = require("./middlewares/auth-middleware");
 
 //initialize routes
 app.use("/api", authRoutes);
 app.use("/api", userAuth, customers);
 app.use("/api", userAuth, restaurantOwners);
+app.use("/api", userAuth, riders);
 //app start
 const appStart = () => {
 	try {
