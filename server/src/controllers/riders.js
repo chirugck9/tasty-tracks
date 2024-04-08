@@ -142,9 +142,33 @@ const updateRiderByid = async (req, res) => {
 		throw new Error("An error has occured while updating the rider");
 	}
 };
+
+//delete rider
+const deleteRiderById = async (req, res) => {
+	try {
+		const query = {
+			text: "DELETE FROM delivery_persons WHERE delivery_person_id = $1 RETURNING *",
+			values: [req.params.delivery_person_id],
+		};
+		const result = await db.query(query);
+		if (result.rowCount === 1) {
+			return res.status(200).json({
+				success: true,
+				message: "Rider deleted succesfully",
+				data: result.rows[0],
+			});
+		} else {
+			throw new Error("Rider not found");
+		}
+	} catch (error) {
+		console.error(error);
+		throw new Error("An error occured while deleting the rider");
+	}
+};
 module.exports = {
 	createRider,
 	getAllRiders,
 	getRiderById,
 	updateRiderByid,
+	deleteRiderById,
 };
