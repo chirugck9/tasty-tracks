@@ -18,6 +18,9 @@ const authRoutes = require("./routes/auth");
 const customers = require("./routes/customers");
 const restaurantOwners = require("./routes/restaurant-owners");
 const riders = require("./routes/riders");
+const restaurants = require("./routes/restaurants");
+const orders = require("./routes/orders");
+
 const { userAuth } = require("./middlewares/auth-middleware");
 
 //initialize routes
@@ -25,6 +28,8 @@ app.use("/api", authRoutes);
 app.use("/api", userAuth, customers);
 app.use("/api", userAuth, restaurantOwners);
 app.use("/api", userAuth, riders);
+app.use("/api", userAuth, restaurants);
+app.use("/api", userAuth, orders);
 //app start
 const appStart = () => {
 	try {
