@@ -11,7 +11,7 @@ const createRestaurant = async (req, res) => {
 		delivery_fee,
 		cuisine_types,
 	} = req.body;
-	const cuisineTypeJson = JSON.stringify(cuisine_types);
+	// const cuisineTypeJson = JSON.stringify(cuisine_types);
 	const query = {
 		text: "INSERT INTO restaurants(restaurant_name,restaurant_description,address,open_hours,delivery_radius,delivery_fee,cuisine_types) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",
 		values: [
@@ -21,7 +21,8 @@ const createRestaurant = async (req, res) => {
 			open_hours,
 			delivery_fee,
 			delivery_radius,
-			cuisineTypeJson,
+			// cuisineTypeJson,
+			cuisine_types,
 		],
 	};
 	try {
