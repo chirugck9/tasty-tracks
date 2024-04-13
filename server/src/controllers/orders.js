@@ -29,8 +29,10 @@ const createOrder = async (req, res) => {
 	};
 	try {
 		const result = await db.query(orderQuery);
-		console.log(result);
-		// const orderId = result.rows[0].order_id;
+		// console.log(result);
+		const orderId = result.rows[0].order_id;
+		{
+		}
 	} catch (error) {
 		console.error(error);
 		throw new Error("An error occured while creating the order");
