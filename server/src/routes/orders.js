@@ -1,8 +1,9 @@
 const { Router } = require("express");
-const { createOrder } = require("../controllers/orders");
+const { createOrder, getAllOrders } = require("../controllers/orders");
 
 const router = Router();
 
 router.post("/orders", createOrder);
+router.get("/orders/:page_id/:limit", getAllOrders);
 
 module.exports = router;
