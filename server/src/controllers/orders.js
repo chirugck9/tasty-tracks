@@ -206,6 +206,35 @@ const updateOrderStatusById = async (req, res) => {
 	}
 };
 
+//track order by order id
+const trackOrderById = async (req, res) => {
+	const orderId = req.params.order_id;
+	try {
+		const deliveryPersonQuery = {
+			text: "SELECT delivery_person_id FROM orders WHERE order_id = $1",
+			values: [orderId],
+		};
+		const result = await db.query(deliveryPersonQuery);
+		const deliveryPersonId = result.rows[0].delivery_person_id;
+		if (!deliveryPersonId) {
+			return res.status(404).json({
+				success: true,
+				message: "Delivery person not assigned to order",
+			});
+		}
+		const deliveryPersonLocation = {
+			latitude: 37.7749,
+			longitude: -122.4194,
+		};
+		return res.status(200).json({
+			delivery_person_id: deliveryPersonId,
+			location: deliveryPersonLocation,
+		});
+	} catch (error) {
+		console.error(error);
+		throw new Error("An error occurred while tracking the order");
+	}
+};
 module.exports = {
 	createOrder,
 	getAllOrders,
@@ -213,4 +242,5 @@ module.exports = {
 	updateOrderById,
 	deleteOrderById,
 	updateOrderStatusById,
+	trackOrderById,
 };
