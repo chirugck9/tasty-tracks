@@ -11,9 +11,12 @@ const createOrder = async (req, res) => {
 		state,
 		zipcode,
 		country,
-		total_price,
 		order_items,
 	} = req.body;
+	let total_price = 0;
+	for (const item of order_items) {
+		total_price += item.price * item.quantity;
+	}
 	const orderQuery = {
 		text: "INSERT INTO orders(customer_id,restaurant_id,delivery_person_id,delivery_address,city,state,zipcode,country,total_price) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING order_id ",
 		values: [
@@ -31,20 +34,14 @@ const createOrder = async (req, res) => {
 	try {
 		const result = await db.query(orderQuery);
 		const orderId = result.rows[0].order_id;
-		// for (const item of order_items) {
-		// 	const { menu_item_id, quantity, price, special_instructions } = item;
-		// 	const itemsQuery = {
-		// 		text: "INSERT INTO order_items (order_id,menu_item_id,quantity,price,special_instructions) VALUES($1,$2,$3,$4,$5) RETURNING *",
-		// 		values: [orderId, menu_item_id, quantity, price, special_instructions],
-		// 	};
-		// 	const itemResult = await db.query(itemsQuery);
-		// }
-		const { menu_item_id, quantity, price, special_instructions } = req.body;
-		const itemsQuery = {
-			text: "INSERT INTO order_items (order_id,menu_item_id,quantity,price,special_instructions) VALUES($1,$2,$3,$4,$5) RETURNING *",
-			values: [orderId, menu_item_id, quantity, price, special_instructions],
-		};
-		const itemResult = await db.query(itemsQuery);
+		for (const item of order_items) {
+			const { menu_item_id, quantity, price, special_instructions } = item;
+			const itemsQuery = {
+				text: "INSERT INTO order_items (order_id,menu_item_id,quantity,price,special_instructions) VALUES($1,$2,$3,$4,$5) RETURNING *",
+				values: [orderId, menu_item_id, quantity, price, special_instructions],
+			};
+			const itemResult = await db.query(itemsQuery);
+		}
 
 		return res.status(201).json({
 			success: true,
@@ -183,10 +180,37 @@ const deleteOrderById = async (req, res) => {
 		throw new Error("An error occured while deleting the order");
 	}
 };
+
+//upadte order status
+const updateOrderStatusById = async (req, res) => {
+	try {
+		const orderId = req.params.order_id;
+		const status = req.params.status;
+		const query = {
+			text: "UPDATE orders SET status = $1 WHERE order_id = $2",
+			values: [status, orderId],
+		};
+		const result = await db.query(query);
+		if (result.rowCount === 1) {
+			return res.status(200).json({
+				success: true,
+				message: `Order status updated to ${status}`,
+				data: result.rows[0],
+			});
+		} else {
+			throw new Error("Order not found");
+		}
+	} catch (error) {
+		console.error(error);
+		throw new Error("An error has occurred while updating the order status");
+	}
+};
+
 module.exports = {
 	createOrder,
 	getAllOrders,
 	getOrderByid,
 	updateOrderById,
 	deleteOrderById,
+	updateOrderStatusById,
 };
