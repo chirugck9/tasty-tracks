@@ -1,13 +1,22 @@
 const db = require("../db");
+const { hash } = require("bcryptjs");
 
 //function to create customer
 
 const createCustomer = async (req, res) => {
 	const { first_name, last_name, email, phone_number, password, address } =
 		req.body;
+	const hashedPassword = await hash(password, 10);
 	const query = {
 		text: "INSERT INTO customers(first_name,last_name,email,phone_number,password,address) VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
-		values: [first_name, last_name, email, phone_number, password, address],
+		values: [
+			first_name,
+			last_name,
+			email,
+			phone_number,
+			hashedPassword,
+			address,
+		],
 	};
 	try {
 		const result = await db.query(query);
