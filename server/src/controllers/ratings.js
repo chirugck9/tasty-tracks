@@ -53,4 +53,26 @@ const createRating = async (req, res) => {
 	}
 };
 
-module.exports = { createRating };
+//average rating of restaurant
+const avgRatingOfRestaurantById = async (req, res) => {
+	const { restaurantId } = req.params;
+	try {
+		const query = {
+			text: `SELECT ROUND(AVG(restaurant_rating),2) AS average_rating FROM ratings WHERE restaurant_id = $1`,
+			values: [restaurantId],
+		};
+		const result = await db.query(query);
+		const avgRating = result.rows[0].average_rating;
+		return res.status(200).json({
+			success: true,
+			message: "Avg fetched succesfully",
+			data: [avgRating],
+		});
+	} catch (error) {
+		console.error(error);
+		throw new Error(
+			"An error occcured while calculating avg rating of restaurant"
+		);
+	}
+};
+module.exports = { createRating, avgRatingOfRestaurantById };
