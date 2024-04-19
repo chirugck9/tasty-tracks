@@ -21,6 +21,7 @@ const riders = require("./routes/riders");
 const restaurants = require("./routes/restaurants");
 const menuItems = require("./routes/menu-items");
 const orders = require("./routes/orders");
+const ratings = require("./routes/ratings");
 
 const { userAuth } = require("./middlewares/auth-middleware");
 
@@ -32,6 +33,7 @@ app.use("/api", userAuth, riders);
 app.use("/api", userAuth, restaurants);
 app.use("/api", userAuth, menuItems);
 app.use("/api", userAuth, orders);
+app.use("/api", userAuth, ratings);
 //app start
 const appStart = () => {
 	try {
