@@ -1,12 +1,22 @@
 const db = require("../db");
+const { hash } = require("bcryptjs");
 
 //create restaurant owner
 const createRestaurantOwner = async (req, res) => {
 	const { first_name, last_name, email, password, phone_number, address } =
 		req.body;
+	const hashedPassword = await hash(password, 10);
+
 	const query = {
 		text: "INSERT INTO restaurant_owners(first_name,last_name,email,password,phone_number,address) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *",
-		values: [first_name, last_name, email, password, phone_number, address],
+		values: [
+			first_name,
+			last_name,
+			email,
+			hashedPassword,
+			phone_number,
+			address,
+		],
 	};
 
 	try {
