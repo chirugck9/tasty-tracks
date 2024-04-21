@@ -49,7 +49,7 @@ const createRating = async (req, res) => {
 		});
 	} catch (error) {
 		console.error(error);
-		throw new Error("An error occured while submitting ratings");
+		throw new Error("An error has occured while submitting ratings");
 	}
 };
 
