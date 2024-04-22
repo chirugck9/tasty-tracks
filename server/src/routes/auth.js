@@ -5,6 +5,7 @@ const {
 	login,
 	protected,
 	logout,
+	testApi,
 } = require("../controllers/auth");
 const { registerValidation, loginValidation } = require("../validators/auth");
 const {
@@ -19,5 +20,6 @@ router.post("/register", registerValidation, validationMiddleware, register);
 router.post("/login", loginValidation, validationMiddleware, login);
 router.get("/protected", userAuth, protected);
 router.get("/logout", userAuth, logout);
+// router.get("/test-success", userAuth, testApi);
 
 module.exports = router;
