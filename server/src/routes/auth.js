@@ -20,9 +20,9 @@ router.post("/register", registerValidation, validationMiddleware, register);
 router.post("/login", loginValidation, validationMiddleware, login);
 router.get("/protected", userAuth, protected);
 router.get("/logout", userAuth, logout);
-// router.get("/test-success", userAuth, testApi);
-router.get("/test", (req, res) => {
-	return res.send("working");
-});
+router.get("/test-", testApi);
+// router.get("/test", (req, res) => {
+// 	return res.send("working");
+// });
 
 module.exports = router;

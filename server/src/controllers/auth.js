@@ -182,11 +182,11 @@ exports.logout = async (req, res) => {
 };
 
 //test
-// exports.testApi = async (req, res) => {
-// 	try {
-// 		return res.send("working");
-// 	} catch (error) {
-// 		console.error(error);
-// 		throw new Error("An error occurred");
-// 	}
-// };
+exports.testApi = async (req, res) => {
+	try {
+		return res.send("working");
+	} catch (error) {
+		console.error(error);
+		throw new Error("An error occurred");
+	}
+};
