@@ -3,6 +3,7 @@ const { PORT, CLIENT_URL } = require("./constants");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 
 const app = express();
 //import passport middleware
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(cors({ origin: CLIENT_URL, credentials: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 //import routes
 const authRoutes = require("./routes/auth");
 const customers = require("./routes/customers");
