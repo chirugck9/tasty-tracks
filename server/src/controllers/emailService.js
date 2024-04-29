@@ -21,7 +21,7 @@ const sendEmail = async (req, res) => {
 	try {
 		const result = await db.query(query1);
 		await transporter.sendMail({
-			from: "test@gmail.com",
+			from: "test1@gmail.com",
 			to: "chiru.gadakary@gmail.com",
 			subject: "Your tasty-tracks order invoice",
 			html: `<p>Thank you for your order!</p>
